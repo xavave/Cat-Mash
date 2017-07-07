@@ -58,7 +58,8 @@ public class CatsHelper
         // consider a thread-safe static instance
         var r = new Random();
         var list = enumerable as IList<T> ?? enumerable.ToList();
-
-        return  new List<T>() { list[r.Next(0, list.Count)], list[r.Next(1, list.Count)] };
+        var first = list[r.Next(0, list.Count)];
+        var second = list.Except(new List<T>() { first }).ToList()[r.Next(0, list.Count-1)];
+        return  new List<T>() { first, second };
     }
 }
