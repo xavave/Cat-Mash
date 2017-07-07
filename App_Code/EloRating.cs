@@ -8,64 +8,37 @@ using System.Web;
 /// </summary>
 public class EloRating
 {
+    /// 
+    /// Updates the scores in the passed matchup. 
+    /// 
+    /// The Matchup to update
+    /// Whether User 1 was the winner (false if User 2 is the winner)
+    /// The desired Diff
+    /// The desired KFactor
+    public static Tuple<Cat, Cat> UpdateScores(Cat leftCat, Cat rightCat, bool user1WonMatch, int diff, int kFactor)
 
-    public static Tuple<CatImage, CatImage> Score(CatImage cat1, CatImage cat2, double Score1 = 0, double Score2 = 0)
     {
 
-        double FinalResult1 = 0;
-        double FinalResult2 = 0;
-        /*
-        double CurrentR1 = 1500.0;
-        double CurrentR2 = 1500.0;
+        double est1 = 1 / Convert.ToDouble(1 + 10 ^ ((int)rightCat.score - (int)leftCat.score) / diff);
+        double est2 = 1 / Convert.ToDouble(1 + 10 ^ ((int)leftCat.score - (int)rightCat.score) / diff);
+        int sc1 = 0;
+        int sc2 = 0;
 
-        double Score1 = 20.0;
-        double Score2 = 10;
-        */
-        double CurrentRating1 = cat1.score;
-        double CurrentRating2 = cat2.score;
-        double E = 0;
-
-        if (Score1 != Score2)
+        if (user1WonMatch)
         {
-            if (Score1 > Score2)
-            {
-                E = 120 - Math.Round(1 / (1 + Math.Pow(10, ((CurrentRating2 - CurrentRating1) / 400))) * 120);
-                FinalResult1 = CurrentRating1 + E;
-                FinalResult2 = CurrentRating2 - E;
-            }
-            else
-            {
-                E = 120 - Math.Round(1 / (1 + Math.Pow(10, ((CurrentRating1 - CurrentRating2) / 400))) * 120);
-                FinalResult1 = CurrentRating1 - E;
-                FinalResult2 = CurrentRating2 + E;
-            }
+            leftCat.nbvotes++;
+            sc1 = 1;
         }
         else
         {
-            if (CurrentRating1 == CurrentRating2)
-            {
-                FinalResult1 = CurrentRating1;
-                FinalResult2 = CurrentRating2;
-            }
-            else
-            {
-                if (CurrentRating1 > CurrentRating2)
-                {
-                    E = (120 - Math.Round(1 / (1 + Math.Pow(10, ((CurrentRating1 - CurrentRating2) / 400))) * 120)) - (120 - Math.Round(1 / (1 + Math.Pow(10, ((CurrentRating2 - CurrentRating1) / 400))) * 120));
-                    FinalResult1 = CurrentRating1 - E;
-                    FinalResult2 = CurrentRating2 + E;
-                }
-                else
-                {
-                    E = (120 - Math.Round(1 / (1 + Math.Pow(10, ((CurrentRating2 - CurrentRating1) / 400))) * 120)) - (120 - Math.Round(1 / (1 + Math.Pow(10, ((CurrentRating1 - CurrentRating2) / 400))) * 120));
-                    FinalResult1 = CurrentRating1 + E;
-                    FinalResult2 = CurrentRating2 - E;
-                }
-            }
+            rightCat.nbvotes++;
+            sc2 = 1;
         }
-        cat1.score += (((FinalResult1 - CurrentRating1) > 0) ? (FinalResult1 - CurrentRating1) : (FinalResult1 - CurrentRating1));
-        cat2.score += (((FinalResult2 - CurrentRating2) > 0) ? (FinalResult2 - CurrentRating2) : (FinalResult2 - CurrentRating2));
-        return Tuple.Create<CatImage, CatImage>(cat1, cat2);
 
+        leftCat.score = Convert.ToInt32(Math.Round((int)leftCat.score + kFactor * (sc1 - est1)));
+        rightCat.score = Convert.ToInt32(Math.Round((int)rightCat.score + kFactor * (sc2 - est2)));
+        return Tuple.Create<Cat, Cat>(leftCat, rightCat);
     }
+
+  
 }

@@ -73,4 +73,11 @@ public partial class SiteMaster : MasterPage
     {
         Context.GetOwinContext().Authentication.SignOut();
     }
+
+    protected void btnRestart_Click(object sender, EventArgs e)
+    {
+        SessionHelper.Set<List<Cat>>("cats", null);
+        Response.Redirect("~/Default.aspx",false);
+        ApplicationInstance.CompleteRequest();
+    }
 }

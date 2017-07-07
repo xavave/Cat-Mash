@@ -8,71 +8,92 @@ using MoreLinq;
 
 public partial class _Default : Page
 {
-    public int nbCats { get; set; }
+    public int nbVotes { get; set; }
     protected void Page_Load(object sender, EventArgs e)
     {
-        if (!IsPostBack)
+        if ((SessionHelper.Get<List<Cat>>("Cats")) == null)
         {
             LoadCats();
-           
+
         }
-        DisplayTwoCats();
+        if (!IsPostBack)
+            DisplayTwoCats();
     }
 
     private void DisplayTwoCats()
     {
-        if ((Session["Cats"] as Cats) != null)
+        nbVotes = getNbCats();
+
+        if ((SessionHelper.Get<List<Cat>>("Cats")) != null)
         {
-            var twoRandomCats = (Session["Cats"] as Cats).images.RandomSubset(2);
-            leftCat.ImageUrl = twoRandomCats.Select(t => t.url).First();
-            leftCatId.Value = twoRandomCats.Select(t => t.id).First();
-            rightCat.ImageUrl = twoRandomCats.Select(t => t.url).Last();
-            rightCatId.Value = twoRandomCats.Select(t => t.id).Last();
+            var catsForVote = SessionHelper.Get<List<Cat>>("Cats");
+            if (catsForVote != null)
+            {
+                var twoCats = CatsHelper.Random<Cat>(catsForVote);
+                btnLeftCat.ImageUrl = twoCats.First().url;
+                leftCatId.Value = twoCats.First().id;
+
+                var rightCat = CatsHelper.Random<Cat>(catsForVote);
+                btnRightCat.ImageUrl = twoCats.Last().url;
+                rightCatId.Value = twoCats.Last().id;
+
+
+            }
         }
     }
 
     private void LoadCats()
     {
-        Session["Cats"] = JsonHelper.GetCats("https://latelier.co/data/cats.json");
-        nbCats = (Session["Cats"] as Cats).images.Where(c=>!c.voted).Count();
+        SessionHelper.Set<List<Cat>>("Cats", CatsHelper.GetCats("https://latelier.co/data/cats.json"));
+
 
 
     }
 
+    private int getNbCats()
+    {
+        if (SessionHelper.Get<List<Cat>>("Cats") != null)
+            return SessionHelper.Get<List<Cat>>("Cats").Sum(c => c.nbvotes);
+        return 0;
+    }
     protected void leftCat_Click(object sender, ImageClickEventArgs e)
     {
-        ScoreCat(WhichCat.Left, 10);
-        
+        ScoreCat(WhichCat.Left);
+        DisplayTwoCats();
+
     }
 
     protected void rightCat_Click(object sender, ImageClickEventArgs e)
     {
-        ScoreCat(WhichCat.Right, 10);
-       
+        ScoreCat(WhichCat.Right);
+        DisplayTwoCats();
+
 
     }
 
-    public void ScoreCat(WhichCat whichCat, double score)
+    public void ScoreCat(WhichCat whichCat)
     {
-        var allCats = Session["Cats"] as Cats;
-        var leftCat = allCats.images.Find(c => c.id == leftCatId.Value);
-        var rightCat = allCats.images.Find(c => c.id == rightCatId.Value);
-        if (whichCat == WhichCat.Left)
-        {
-            EloRating.Score(leftCat, rightCat,10,0);
-           (Session["Cats"] as Cats).images.Where(i => i.id == leftCatId.Value).First().voted=true;
-           
-        }
-        else
-        {
-            EloRating.Score(leftCat, rightCat, 0, 10);
-            (Session["Cats"] as Cats).images.Where(i => i.id == rightCatId.Value).First().voted = true;
-        }
-        nbCats = (Session["Cats"] as Cats).images.Where(c => !c.voted).Count();
+        var allCats = SessionHelper.Get<List<Cat>>("Cats");
+        var leftCat = allCats.Find(c => c.id == leftCatId.Value);
+        var rightCat = allCats.Find(c => c.id == rightCatId.Value);
 
+        EloRating.UpdateScores(leftCat, rightCat, whichCat == WhichCat.Left, 400, 10);
 
     }
 
+
+
+
+    protected void nextCats_Click(object sender, EventArgs e)
+    {
+        //var allCats = SessionHelper.Get<List<Cat>>("Cats");
+        //var leftCat = allCats.Find(c => c.id == leftCatId.Value);
+        //var rightCat = allCats.Find(c => c.id == rightCatId.Value);
+        //leftCat.voted = true;
+        //rightCat.voted = true;
+        DisplayTwoCats();
+
+    }
 }
 public enum WhichCat
 {

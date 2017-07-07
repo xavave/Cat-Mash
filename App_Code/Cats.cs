@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,13 +9,14 @@ using System.Web;
 /// </summary>
 public class Cats
 {
-    public List<CatImage> images { get; set; }
+    [JsonProperty("images")]
+    public List<Cat> cats { get; set; }
 
 }
-public class CatImage
+public class Cat
 {
     public string url { get; set; }
     public string id { get; set; }
-    public bool voted { get; set; }
+    public int nbvotes { get; set; }
     public double score { get; set; }
 }

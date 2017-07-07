@@ -2,13 +2,13 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2><%: Title %></h2>
-    <h3>Les scores en détails</h3><asp:CheckBox runat="server" ID="chkAll" Checked="false" AutoPostBack="true"/>Afficher les chats dont le score est nul
-   <asp:Repeater runat="server" ID="rptCats" DataMember="CatImage" OnItemDataBound="rptCats_ItemDataBound">
+    <h3>Les scores en détails</h3><asp:CheckBox runat="server" ID="chkAll" Checked="false" AutoPostBack="true"/>Afficher les chats dont le score est nul ou inférieur à 0
+   <asp:Repeater runat="server" ID="rptCats" DataMember="Cat" OnItemDataBound="rptCats_ItemDataBound">
        <HeaderTemplate>
            <div><ul>
        </HeaderTemplate>
        <ItemTemplate>
-         <li><asp:Image runat="server" Width="70px" ID="imgCat" /><asp:Label runat="server" ID="lblCatScore"></asp:Label></li>  
+         <li><asp:Image runat="server" Width="70px" ID="imgCat" /><span>&nbsp;Score Elo :&nbsp;</span><asp:Label runat="server" ID="lblCatScore"></asp:Label><span>&nbsp;nb de votes :&nbsp;</span><asp:Label runat="server" ID="lblNbVotes"></asp:Label></li>  
        </ItemTemplate>
        <FooterTemplate>
            </ul></div>

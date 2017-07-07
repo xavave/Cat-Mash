@@ -52,7 +52,7 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li><a runat="server" href="~/Scores">Scores</a></li>
-                       
+                        <li><asp:Button runat="server" text="Recommencer à zéro" ID="btnRestart" OnClick="btnRestart_Click" /></asp:Button></li>
                     </ul>
                    
                 </div>
