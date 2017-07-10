@@ -18,7 +18,9 @@ public class Cat
 {
     public string url { get; set; }
     public string id { get; set; }
-    public int nbvotes { get; set; }
+    public int nbvotesgagnants { get; set; }
+    public int nbvotesperdants { get; set; }
+    public int nbmatchsnuls { get; set; }
     public double score { get; set; }
    
 }

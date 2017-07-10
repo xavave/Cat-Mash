@@ -21,7 +21,7 @@ public class CatsHelper
 
             var cats = JsonConvert.DeserializeObject<Cats>(json).cats.ToList();
             cats.RemoveAll(c => !IsImageExists(c.url));
-            cats.ForEach(c => { c.nbvotes = 0; c.score = 1000;  });
+            cats.ForEach(c => { c.nbvotesgagnants = c.nbmatchsnuls = c.nbvotesperdants = 0; c.score = 1000; });
 
             return cats;
 

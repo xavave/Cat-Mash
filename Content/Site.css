@@ -41,3 +41,11 @@ textarea {
     }
 
     h2 { text-align:center;}
+
+.liRpt {
+    border: 1px solid #808080;
+    list-style-type: none;
+}
+.spR {
+    border: 1px solid #808080;
+}

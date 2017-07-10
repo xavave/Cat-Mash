@@ -14,34 +14,36 @@ public class EloRating
     public static Tuple<Cat, Cat> UpdateScores(Cat leftCat, Cat rightCat, double resultat, int diffFactor = 400, int kFactor = 32)
 
     {
-     
-       
-        var Expected1 = GetProbaWinCat(leftCat,rightCat);
+
+
+        var Expected1 = GetProbaWinCat(leftCat, rightCat);
         var Expected2 = GetProbaWinCat(rightCat, leftCat);
 
         if (resultat == 1)
         {
-            leftCat.nbvotes++;
+            leftCat.nbvotesgagnants++;
+            rightCat.nbvotesperdants++;
             leftCat.score = leftCat.score + kFactor * (1 - Expected1);
             rightCat.score = rightCat.score + kFactor * (0 - Expected2);
 
         }
         else if (resultat == 0)
         {
-            rightCat.nbvotes++;
+            rightCat.nbvotesgagnants++;
+            leftCat.nbvotesperdants++;
             leftCat.score = leftCat.score + kFactor * (0 - Expected1);
             rightCat.score = rightCat.score + kFactor * (1 - Expected2);
 
         }
         else if (resultat == 0.5)
         {
-           
+
             leftCat.score = leftCat.score + kFactor * (resultat - Expected1);
             rightCat.score = rightCat.score + kFactor * (resultat - Expected2);
-
+            leftCat.nbmatchsnuls = rightCat.nbmatchsnuls = +1;
         }
 
-       
+
 
         int? nbVotesTotal = SessionHelper.Get<int>("nbVotesTotal");
         if (!nbVotesTotal.HasValue) nbVotesTotal = 0;
@@ -50,7 +52,7 @@ public class EloRating
         return Tuple.Create<Cat, Cat>(leftCat, rightCat);
     }
 
-    public static double GetProbaWinCat(Cat cat1,Cat cat2, int diffFactor = 400)
+    public static double GetProbaWinCat(Cat cat1, Cat cat2, int diffFactor = 400)
     {
         var Rating1 = Math.Pow(10, cat1.score / diffFactor);
         var Rating2 = Math.Pow(10, cat2.score / diffFactor);
