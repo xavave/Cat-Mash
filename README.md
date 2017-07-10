@@ -11,5 +11,5 @@ L'application devra donc être composée de deux pages :
 Une page pour voter
 
 Une page pour voir tous les chats avec leur score<br/>
-<img src="http://averbouch.biz/cat-mash1.PNG"><br/>
-<img src="http://averbouch.biz/cat-mash2.PNG">
+<img src="http://averbouch.biz/cat--mash1.PNG"><br/>
+<img src="http://averbouch.biz/cat--mash2.PNG">
