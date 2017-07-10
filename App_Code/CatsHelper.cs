@@ -21,8 +21,8 @@ public class CatsHelper
 
             var cats = JsonConvert.DeserializeObject<Cats>(json).cats.ToList();
             cats.RemoveAll(c => !IsImageExists(c.url));
-            cats.ForEach(c => { c.nbvotes = 0; c.score = 0; });
-          
+            cats.ForEach(c => { c.nbvotes = 0; c.score = 1000;  });
+
             return cats;
 
         }
@@ -34,7 +34,7 @@ public class CatsHelper
         HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
         request.Method = "HEAD";
 
-        bool exists= true;
+        bool exists = true;
         try
         {
             request.GetResponse();
@@ -47,7 +47,7 @@ public class CatsHelper
         return exists;
     }
 
-    public static IEnumerable<T> Random<T>( IEnumerable<T> enumerable)
+    public static IEnumerable<T> Random<T>(IEnumerable<T> enumerable)
     {
         if (enumerable == null)
         {
@@ -59,7 +59,7 @@ public class CatsHelper
         var r = new Random();
         var list = enumerable as IList<T> ?? enumerable.ToList();
         var first = list[r.Next(0, list.Count)];
-        var second = list.Except(new List<T>() { first }).ToList()[r.Next(0, list.Count-1)];
-        return  new List<T>() { first, second };
+        var second = list.Except(new List<T>() { first }).ToList()[r.Next(0, list.Count - 1)];
+        return new List<T>() { first, second };
     }
 }

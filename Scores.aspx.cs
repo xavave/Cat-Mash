@@ -20,6 +20,8 @@ public partial class Scores : Page
             else
                 rptCats.DataSource = catsToDisplay.Where(c => c.score > 0);
             rptCats.DataBind();
+            int? nbVotesTotal = SessionHelper.Get<int>("nbVotesTotal");
+            lblNbVotesTotal.Text = nbVotesTotal.HasValue ? " (" + nbVotesTotal.Value.ToString() + " votes au total" + ")" : string.Empty;
         }
     }
 
@@ -33,6 +35,7 @@ public partial class Scores : Page
             var lblCatScore = e.Item.FindControl("lblCatScore") as Label;
             lblCatScore.Text = cat.score.ToString();
             var lblnbVotes = e.Item.FindControl("lblnbVotes") as Label;
+
             lblnbVotes.Text = cat.nbvotes.ToString();
         }
     }

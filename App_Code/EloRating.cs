@@ -10,35 +10,52 @@ public class EloRating
 {
     /// 
     /// Updates the scores in the passed matchup. 
-    /// 
-    /// The Matchup to update
-    /// Whether User 1 was the winner (false if User 2 is the winner)
-    /// The desired Diff
-    /// The desired KFactor
-    public static Tuple<Cat, Cat> UpdateScores(Cat leftCat, Cat rightCat, bool user1WonMatch, int diff, int kFactor)
+    /// https://fr.wikipedia.org/wiki/Classement_Elo#Th.C3.A9orie_math.C3.A9matique
+    public static Tuple<Cat, Cat> UpdateScores(Cat leftCat, Cat rightCat, double resultat, int diffFactor = 400, int kFactor = 32)
 
     {
+     
+       
+        var Expected1 = GetProbaWinCat(leftCat,rightCat);
+        var Expected2 = GetProbaWinCat(rightCat, leftCat);
 
-        double est1 = 1 / Convert.ToDouble(1 + 10 ^ ((int)rightCat.score - (int)leftCat.score) / diff);
-        double est2 = 1 / Convert.ToDouble(1 + 10 ^ ((int)leftCat.score - (int)rightCat.score) / diff);
-        int sc1 = 0;
-        int sc2 = 0;
-
-        if (user1WonMatch)
+        if (resultat == 1)
         {
             leftCat.nbvotes++;
-            sc1 = 1;
+            leftCat.score = leftCat.score + kFactor * (1 - Expected1);
+            rightCat.score = rightCat.score + kFactor * (0 - Expected2);
+
         }
-        else
+        else if (resultat == 0)
         {
             rightCat.nbvotes++;
-            sc2 = 1;
+            leftCat.score = leftCat.score + kFactor * (0 - Expected1);
+            rightCat.score = rightCat.score + kFactor * (1 - Expected2);
+
+        }
+        else if (resultat == 0.5)
+        {
+           
+            leftCat.score = leftCat.score + kFactor * (resultat - Expected1);
+            rightCat.score = rightCat.score + kFactor * (resultat - Expected2);
+
         }
 
-        leftCat.score = Convert.ToInt32(Math.Round((int)leftCat.score + kFactor * (sc1 - est1)));
-        rightCat.score = Convert.ToInt32(Math.Round((int)rightCat.score + kFactor * (sc2 - est2)));
+       
+
+        int? nbVotesTotal = SessionHelper.Get<int>("nbVotesTotal");
+        if (!nbVotesTotal.HasValue) nbVotesTotal = 0;
+
+        SessionHelper.Set<int>("nbVotesTotal", (int)++nbVotesTotal);
         return Tuple.Create<Cat, Cat>(leftCat, rightCat);
     }
 
-  
+    public static double GetProbaWinCat(Cat cat1,Cat cat2, int diffFactor = 400)
+    {
+        var Rating1 = Math.Pow(10, cat1.score / diffFactor);
+        var Rating2 = Math.Pow(10, cat2.score / diffFactor);
+
+        var Expected = Rating1 / (Rating1 + Rating2);
+        return Expected;
+    }
 }

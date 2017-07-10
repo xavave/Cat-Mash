@@ -11,6 +11,7 @@ public class Cats
 {
     [JsonProperty("images")]
     public List<Cat> cats { get; set; }
+  
 
 }
 public class Cat
@@ -19,4 +20,5 @@ public class Cat
     public string id { get; set; }
     public int nbvotes { get; set; }
     public double score { get; set; }
+   
 }

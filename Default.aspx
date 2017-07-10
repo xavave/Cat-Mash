@@ -13,11 +13,14 @@
             <h2>Celui-ci</h2>
             <asp:ImageButton runat="server" ID="btnLeftCat" CssClass="parent img" OnClick="leftCat_Click" />
             <asp:HiddenField runat="server" ID="leftCatId" />
+            chances de gagner :<asp:Label runat="server" ID="probaWinLeft"></asp:Label>
         </div>
         <div class="col-md-6 parent">
             <h2>Celui-là</h2>
             <asp:ImageButton runat="server" ID="btnRightCat" CssClass="parent img" OnClick="rightCat_Click" />
             <asp:HiddenField runat="server" ID="rightCatId" />
+            chances de gagner :<asp:Label runat="server" ID="probaWinRight"></asp:Label>
+
         </div>
     </div>
     <div class="row">

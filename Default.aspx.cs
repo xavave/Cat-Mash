@@ -14,7 +14,7 @@ public partial class _Default : Page
         if ((SessionHelper.Get<List<Cat>>("Cats")) == null)
         {
             LoadCats();
-
+            SessionHelper.Set<int>("nbVotesTotal", 0);
         }
         if (!IsPostBack)
             DisplayTwoCats();
@@ -32,11 +32,12 @@ public partial class _Default : Page
                 var twoCats = CatsHelper.Random<Cat>(catsForVote);
                 btnLeftCat.ImageUrl = twoCats.First().url;
                 leftCatId.Value = twoCats.First().id;
+                probaWinLeft.Text = Math.Round(EloRating.GetProbaWinCat(twoCats.First(), twoCats.Last())*100, 2) + " %";
 
                 var rightCat = CatsHelper.Random<Cat>(catsForVote);
                 btnRightCat.ImageUrl = twoCats.Last().url;
                 rightCatId.Value = twoCats.Last().id;
-
+                probaWinRight.Text = Math.Round(EloRating.GetProbaWinCat(twoCats.Last(), twoCats.First())*100, 2) + " %";
 
             }
         }
@@ -47,14 +48,13 @@ public partial class _Default : Page
         SessionHelper.Set<List<Cat>>("Cats", CatsHelper.GetCats("https://latelier.co/data/cats.json"));
 
 
-
     }
 
     private int getNbCats()
     {
-        if (SessionHelper.Get<List<Cat>>("Cats") != null)
-            return SessionHelper.Get<List<Cat>>("Cats").Sum(c => c.nbvotes);
-        return 0;
+        int? nbVotesTotal = SessionHelper.Get<int>("nbVotesTotal");
+        if (!nbVotesTotal.HasValue) nbVotesTotal = 0;
+        return nbVotesTotal.Value;
     }
     protected void leftCat_Click(object sender, ImageClickEventArgs e)
     {
@@ -76,8 +76,9 @@ public partial class _Default : Page
         var allCats = SessionHelper.Get<List<Cat>>("Cats");
         var leftCat = allCats.Find(c => c.id == leftCatId.Value);
         var rightCat = allCats.Find(c => c.id == rightCatId.Value);
+        var resultat = whichCat == WhichCat.Left ? 1 : 0;
 
-        EloRating.UpdateScores(leftCat, rightCat, whichCat == WhichCat.Left, 400, 10);
+        EloRating.UpdateScores(leftCat, rightCat, resultat, 400, 10);
 
     }
 
@@ -86,11 +87,10 @@ public partial class _Default : Page
 
     protected void nextCats_Click(object sender, EventArgs e)
     {
-        //var allCats = SessionHelper.Get<List<Cat>>("Cats");
-        //var leftCat = allCats.Find(c => c.id == leftCatId.Value);
-        //var rightCat = allCats.Find(c => c.id == rightCatId.Value);
-        //leftCat.voted = true;
-        //rightCat.voted = true;
+        var allCats = SessionHelper.Get<List<Cat>>("Cats");
+        var leftCat = allCats.Find(c => c.id == leftCatId.Value);
+        var rightCat = allCats.Find(c => c.id == rightCatId.Value);
+        EloRating.UpdateScores(leftCat, rightCat, 0.5, 400, 10);
         DisplayTwoCats();
 
     }
